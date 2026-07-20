@@ -1,0 +1,712 @@
+id: https://example.org/focus_line_item_schema
+name: focus_line_item
+description: A subset of the FinOps FOCUS 1.3 specification covering the columns required for federated billing. CSPs MUST populate all required fields. Recommended fields SHOULD be populated where the CSP's billing system supports them.
+classes:
+  FocusLineItem:
+    description: 'A subset of the FinOps FOCUS 1.3 specification covering the columns required for federated billing. CSPs MUST populate all required fields.  Recommended fields SHOULD be populated where the CSP''s billing system supports them.  Reference: https://focus.finops.org/focus-specification/1-3/'
+    abstract: true
+    attributes:
+      AllocatedMethodDetails:
+        title: Allocated Method Details
+        description: A set of properties describing how resources are allocated in data generator-defined split cost allocation.
+        required: false
+        range: string
+      AllocatedMethodId:
+        title: Allocated Method ID
+        description: A unique identifier defining the method of data generator-calculated split cost allocation.
+        required: false
+        range: string
+      AllocatedResourceId:
+        title: Allocated Resource ID
+        description: The identifier of the object to which cost is allocated in data generator-calculated split cost allocation.
+        required: false
+        range: string
+      AllocatedResourceName:
+        title: Allocated Resource Name
+        description: The display name of the object to which cost is allocated in data generator-calculated split cost allocation.
+        required: false
+        range: string
+      AllocatedTags:
+        title: Allocated Tags
+        description: A set of tags assigned to tag sources that are applicable to allocated charges in data generator-calculated split cost allocation.
+        required: false
+        range: string
+      AvailabilityZone:
+        title: Availability Zone
+        description: A host-provider-assigned identifier for a physically separated and isolated area within a Region that provides high availability and fault tolerance.
+        required: false
+        range: string
+      BilledCost:
+        title: Billed Cost
+        description: A charge serving as the basis for invoicing, inclusive of all reduced rates and discounts while excluding the amortization of upfront charges (one-time or recurring).
+        required: true
+        range: decimal
+      BillingAccountId:
+        title: Billing Account ID
+        description: The identifier assigned to a billing account by the invoice issuer.
+        required: true
+        range: string
+      BillingAccountName:
+        title: Billing Account Name
+        description: The display name assigned to a billing account .
+        required: false
+        range: string
+      BillingAccountType:
+        title: Billing Account Type
+        description: An invoice-issuer-assigned name to identify the type of billing account .
+        required: true
+        range: string
+      BillingCurrency:
+        title: Billing Currency
+        description: Represents the currency that a charge was billed in.
+        required: true
+        range: string
+      BillingPeriodEnd:
+        title: Billing Period End
+        description: The exclusive end bound of a billing period .
+        required: true
+        range: datetime
+      BillingPeriodStart:
+        title: Billing Period Start
+        description: The inclusive start bound of a billing period .
+        required: true
+        range: datetime
+      CapacityReservationId:
+        title: Capacity Reservation ID
+        description: The identifier assigned to a capacity reservation by the service provider.
+        required: false
+        range: string
+      CapacityReservationStatus:
+        title: Capacity Reservation Status
+        description: Indicates whether the charge represents either the consumption of a capacity reservation or when a capacity reservation is unused.
+        required: false
+        range: CapacityReservationStatusEnum
+      ChargeCategory:
+        title: Charge Category
+        description: Represents the highest-level classification of a charge based on the nature of how it is billed.
+        required: true
+        range: string
+      ChargeClass:
+        title: Charge Class
+        description: Indicates whether the row represents a correction to a previously invoiced billing period .
+        required: false
+        range: string
+      ChargeDescription:
+        title: Charge Description
+        description: Self-contained summary of the charge's purpose and price.
+        required: false
+        range: string
+      ChargeFrequency:
+        title: Charge Frequency
+        description: Indicates how often a charge will occur.
+        required: true
+        range: string
+      ChargePeriodEnd:
+        title: Charge Period End
+        description: The exclusive end bound of a charge period .
+        required: true
+        range: datetime
+      ChargePeriodStart:
+        title: Charge Period Start
+        description: The inclusive start bound of a charge period .
+        required: true
+        range: datetime
+      CommitmentDiscountCategory:
+        title: Commitment Discount Category
+        description: Indicates whether the commitment discount identified in the CommitmentDiscountId column is based on usage quantity or cost (aka "spend").
+        required: false
+        range: CommitmentDiscountCategoryEnum
+      CommitmentDiscountId:
+        title: Commitment Discount ID
+        description: The identifier assigned to a commitment discount by the service provider.
+        required: false
+        range: string
+      CommitmentDiscountName:
+        title: Commitment Discount Name
+        description: The display name assigned to a commitment discount .
+        required: false
+        range: string
+      CommitmentDiscountQuantity:
+        title: Commitment Discount Quantity
+        description: The amount of a commitment discount purchased or accounted for in commitment discount related rows that is denominated in Commitment Discount Units.
+        required: false
+        range: decimal
+      CommitmentDiscountStatus:
+        title: Commitment Discount Status
+        description: Indicates whether the charge corresponds with the consumption of a commitment discount or the unused portion of the committed amount.
+        required: false
+        range: CommitmentDiscountStatusEnum
+      CommitmentDiscountType:
+        title: Commitment Discount Type
+        description: A service-provider-assigned identifier for the type of commitment discount applied to the row .
+        required: false
+        range: string
+      CommitmentDiscountUnit:
+        title: Commitment Discount Unit
+        description: The service-provider-specified measurement unit indicating how a service provider measures the Commitment Discount Quantity of a commitment discount .
+        required: false
+        range: string
+      ConsumedQuantity:
+        title: Consumed Quantity
+        description: The volume of a metered SKU associated with a resource or service used, based on the Consumed Unit.
+        required: false
+        range: decimal
+      ConsumedUnit:
+        title: Consumed Unit
+        description: Service-provider-specified measurement unit indicating how a service provider measures usage of a metered SKU associated with a resource or service .
+        required: false
+        range: string
+      ContractApplied:
+        title: Contract Applied
+        description: A set of properties that associate a charge with one or more contract commitments .
+        required: false
+        range: string
+      ContractedCost:
+        title: Contracted Cost
+        description: Cost calculated by multiplying contracted unit price and the corresponding Pricing Quantity.
+        required: true
+        range: decimal
+      ContractedUnitPrice:
+        title: Contracted Unit Price
+        description: The agreed-upon unit price for a single Pricing Unit of the associated SKU, inclusive of negotiated discounts, if present, while excluding negotiated commitment discounts or any other discounts.
+        required: false
+        range: decimal
+      EffectiveCost:
+        title: Effective Cost
+        description: The amortized cost of the charge after applying all reduced rates, discounts, and the applicable portion of relevant, prepaid purchases (one-time or recurring) that covered this charge .
+        required: true
+        range: decimal
+      HostProviderName:
+        title: Host Provider Name
+        description: The name of the entity whose resources are used by the Service Provider to make their resources or services available.
+        required: true
+        range: string
+      InvoiceId:
+        title: Invoice ID
+        description: The invoice-issuer-assigned identifier for an invoice encapsulating charges in the corresponding billing period for a given billing account.
+        required: false
+        range: string
+      InvoiceIssuerName:
+        title: Invoice Issuer Name
+        description: The name of the entity responsible for invoicing for the resources or services consumed.
+        required: true
+        range: string
+      ListCost:
+        title: List Cost
+        description: Cost calculated by multiplying List Unit Price and the corresponding Pricing Quantity.
+        required: true
+        range: decimal
+      ListUnitPrice:
+        title: List Unit Price
+        description: The suggested service-provider-published unit price for a single Pricing Unit of the associated SKU, exclusive of any discounts.
+        required: false
+        range: decimal
+      PricingCategory:
+        title: Pricing Category
+        description: Describes the pricing model used for a charge at the time of use or purchase.
+        required: false
+        range: string
+      PricingCurrency:
+        title: Pricing Currency
+        description: The national or virtual currency denomination that a resource or service was priced in.
+        required: false
+        range: string
+      PricingCurrencyContractedUnitPrice:
+        title: Pricing Currency Contracted Unit Price
+        description: The agreed-upon unit price for a single Pricing Unit of the associated SKU, inclusive of negotiated discounts , if present, while excluding negotiated commitment discounts or any other discounts, and expressed in Pricing Currency.
+        required: false
+        range: decimal
+      PricingCurrencyEffectiveCost:
+        title: Pricing Currency Effective Cost
+        description: The cost of the charge after applying all reduced rates, discounts, and the applicable portion of relevant, prepaid purchases (one-time or recurring) that covered this charge , as denominated in Pricing Currency.
+        required: false
+        range: decimal
+      PricingCurrencyListUnitPrice:
+        title: Pricing Currency List Unit Price
+        description: The suggested service-provider-published unit price for a single Pricing Unit of the associated SKU , exclusive of any discounts and expressed in Pricing Currency.
+        required: false
+        range: decimal
+      PricingQuantity:
+        title: Pricing Quantity
+        description: The volume of a given SKU associated with a resource or service used or purchased, based on the Pricing Unit.
+        required: false
+        range: decimal
+      PricingUnit:
+        title: Pricing Unit
+        description: Service-provider-specified measurement unit for determining unit prices, indicating how the service provider rates measured usage and purchase quantities after applying pricing rules like block pricing .
+        required: false
+        range: string
+      RegionId:
+        title: Region ID
+        description: Host-provider-assigned identifier for an isolated geographic area where a resource is provisioned or a service is provided.
+        required: false
+        range: string
+      RegionName:
+        title: Region Name
+        description: The name of an isolated geographic area where a resource is provisioned or a service is provided.
+        required: false
+        range: string
+      ResourceId:
+        title: Resource ID
+        description: Identifier assigned to a resource by the service provider.
+        required: false
+        range: string
+      ResourceName:
+        title: Resource Name
+        description: Display name assigned to a resource .
+        required: false
+        range: string
+      ResourceType:
+        title: Resource Type
+        description: The kind of resource the charge applies to.
+        required: false
+        range: string
+      ServiceCategory:
+        title: Service Category
+        description: Highest-level classification of a service based on the core function of the service .
+        required: true
+        range: ServiceCategoryEnum
+      ServiceName:
+        title: Service Name
+        description: An offering that can be purchased from a service provider (e.g., cloud virtual machine, SaaS database, professional services from a systems integrator).
+        required: true
+        range: string
+      ServiceProviderName:
+        title: Service Provider Name
+        description: The name of the entity that made the resources or services available for purchase or consumption.
+        required: true
+        range: string
+      ServiceSubcategory:
+        title: Service Subcategory
+        description: Secondary classification of the Service Category for a service based on its core function.
+        required: true
+        range: ServiceSubcategoryEnum
+      SkuId:
+        title: SKU ID
+        description: Service-provider-specified unique identifier that represents a specific SKU (e.g., a quantifiable good or service offering).
+        required: false
+        range: string
+      SkuMeter:
+        title: SKU Meter
+        description: Describes the functionality being metered or measured by a particular SKU in a charge .
+        required: false
+        range: string
+      SkuPriceDetails:
+        title: SKU Price Details
+        description: A set of properties of a SKU Price ID which are meaningful and common to all instances of that SKU Price ID.
+        required: false
+        range: string
+      SkuPriceId:
+        title: SKU Price ID
+        description: A service-provider-specified unique identifier that represents a specific SKU Price associated with a resource or service used or purchased.
+        required: false
+        range: string
+      SubAccountId:
+        title: Sub Account ID
+        description: An ID assigned to a grouping of resources or services , often used to manage access and/or cost.
+        required: false
+        range: string
+      SubAccountName:
+        title: Sub Account Name
+        description: A name assigned to a grouping of resources or services , often used to manage access and/or cost.
+        required: false
+        range: string
+      SubAccountType:
+        title: Sub Account Type
+        description: A service-provider-assigned name to identify the type of sub account .
+        required: false
+        range: string
+      Tags:
+        title: Tags
+        description: The set of tags assigned to tag sources that account for potential provider-defined or user-defined tag evaluations.
+        required: false
+        range: string
+enums:
+  CapacityReservationStatusEnum:
+    permissible_values:
+      used:
+        description: Charges that utilized a specific amount of a capacity reservation .
+      unused:
+        description: Charges that represent the unused portion of a capacity reservation .
+  CommitmentDiscountCategoryEnum:
+    permissible_values:
+      spend:
+        description: Commitment discounts that require a predetermined amount of spend.
+      usage:
+        description: Commitment discounts that require a predetermined amount of usage.
+  CommitmentDiscountStatusEnum:
+    permissible_values:
+      used:
+        description: Charges that utilized a specific amount of a commitment discount.
+      unused:
+        description: Charges that represent the unused portion of the commitment discount.
+  ServiceCategoryEnum:
+    permissible_values:
+      ai_and_machine_learning:
+        description: Artificial Intelligence and Machine Learning related technologies.
+      analytics:
+        description: Data processing, analytics, and visualization capabilities.
+      business_applications:
+        description: Business and productivity applications and services.
+      compute:
+        description: Virtual, containerized, serverless, or high-performance computing infrastructure and services.
+      databases:
+        description: Database platforms and services that allow for storage and querying of data.
+      developer_tools:
+        description: Software development and delivery tools and services.
+      multicloud:
+        description: Support for interworking of multiple cloud and/or on-premises environments.
+      identity:
+        description: Identity and access management services.
+      integration:
+        description: Services that allow applications to interact with one another.
+      internet_of_things:
+        description: Development and management of IoT devices and networks.
+      management_and_governance:
+        description: Management, logging, and observability of a customer's use of cloud.
+      media:
+        description: Media and entertainment streaming and processing services.
+      migration:
+        description: Moving applications and data to the cloud.
+      mobile:
+        description: Services enabling cloud applications to interact via mobile technologies.
+      networking:
+        description: Network connectivity and management.
+      security:
+        description: Security monitoring and compliance services.
+      storage:
+        description: Storage services for structured or unstructured data.
+      web:
+        description: Services enabling cloud applications to interact via the Internet.
+      other:
+        description: New or emerging services that do not align with an existing category.
+  ServiceSubcategoryEnum:
+    permissible_values:
+      ai_platforms:
+        description: Unified solution that combines artificial intelligence and machine learning technologies.
+        annotations:
+          service_category: AI and Machine Learning
+      bots:
+        description: Automated performance of tasks such as customer service, data collection, and content moderation.
+        annotations:
+          service_category: AI and Machine Learning
+      generative_ai:
+        description: Creation of content like text, images, and music by learning patterns from existing data.
+        annotations:
+          service_category: AI and Machine Learning
+      machine_learning:
+        description: Creation, training, and deployment of statistical algorithms that learn from and perform tasks based on data.
+        annotations:
+          service_category: AI and Machine Learning
+      natural_language_processing:
+        description: Generation of human language, handling tasks like translation, sentiment analysis, and text summarization.
+        annotations:
+          service_category: AI and Machine Learning
+      other_ai_and_machine_learning:
+        description: AI and Machine Learning services that do not fall into one of the defined subcategories.
+        annotations:
+          service_category: AI and Machine Learning
+      analytics_platforms:
+        description: Unified solution that combines technologies across the entire analytics lifecycle.
+        annotations:
+          service_category: Analytics
+      business_intelligence:
+        description: Semantic models, dashboards, reports, and data visualizations to track performance and identify trends.
+        annotations:
+          service_category: Analytics
+      data_processing:
+        description: Integration and transformation tasks to prepare data for analysis.
+        annotations:
+          service_category: Analytics
+      search:
+        description: Discovery of information by indexing and retrieving data from various sources.
+        annotations:
+          service_category: Analytics
+      streaming_analytics:
+        description: Real-time data stream processes to detect patterns, trends, and anomalies as they occur.
+        annotations:
+          service_category: Analytics
+      other_analytics:
+        description: Analytics services that do not fall into one of the defined subcategories.
+        annotations:
+          service_category: Analytics
+      productivity_and_collaboration:
+        description: Tools that facilitate individuals managing tasks and working together.
+        annotations:
+          service_category: Business Applications
+      other_business_applications:
+        description: Business Applications services that do not fall into one of the defined subcategories.
+        annotations:
+          service_category: Business Applications
+      containers:
+        description: Management and orchestration of containerized compute platforms.
+        annotations:
+          service_category: Compute
+      end_user_computing:
+        description: Virtualized desktop infrastructure and device / endpoint management.
+        annotations:
+          service_category: Compute
+      quantum_compute:
+        description: Resources and simulators that leverage the principles of quantum mechanics.
+        annotations:
+          service_category: Compute
+      serverless_compute:
+        description: Enablement of compute capabilities without provisioning or managing servers.
+        annotations:
+          service_category: Compute
+      virtual_machines:
+        description: Computing environments ranging from hosts with abstracted operating systems to bare-metal servers.
+        annotations:
+          service_category: Compute
+      other_compute:
+        description: Compute services that do not fall into one of the defined subcategories.
+        annotations:
+          service_category: Compute
+      caching:
+        description: Low-latency and high-throughput access to frequently accessed data.
+        annotations:
+          service_category: Databases
+      data_warehouses:
+        description: Big data storage and querying capabilities.
+        annotations:
+          service_category: Databases
+      ledger_databases:
+        description: Immutable and transparent databases to record tamper-proof and cryptographically secure transactions.
+        annotations:
+          service_category: Databases
+      nosql_databases:
+        description: Unstructured or semi-structured data storage and querying capabilities.
+        annotations:
+          service_category: Databases
+      relational_databases:
+        description: Structured data storage and querying capabilities.
+        annotations:
+          service_category: Databases
+      time_series_databases:
+        description: Time-stamped data storage and querying capabilities.
+        annotations:
+          service_category: Databases
+      other_databases:
+        description: Database services that do not fall into one of the defined subcategories.
+        annotations:
+          service_category: Databases
+      developer_platforms:
+        description: Unified solution that combines technologies across multiple areas of the software development lifecycle.
+        annotations:
+          service_category: Developer Tools
+      continuous_integration_and_deployment:
+        description: CI/CD tools and services that support building and deploying code for software and systems.
+        annotations:
+          service_category: Developer Tools
+      development_environments:
+        description: Tools and services that support authoring code for software and systems.
+        annotations:
+          service_category: Developer Tools
+      source_code_management:
+        description: Tools and services that support version control of code for software and systems.
+        annotations:
+          service_category: Developer Tools
+      quality_assurance:
+        description: Tools and services that support testing code for software and systems.
+        annotations:
+          service_category: Developer Tools
+      other_developer_tools:
+        description: Developer Tools services that do not fall into one of the defined subcategories.
+        annotations:
+          service_category: Developer Tools
+      identity_and_access_management:
+        description: Technologies that ensure users have appropriate access to resources.
+        annotations:
+          service_category: Identity
+      other_identity:
+        description: Identity services that do not fall into one of the defined subcategories.
+        annotations:
+          service_category: Identity
+      api_management:
+        description: Creation, publishing, and management of application programming interfaces.
+        annotations:
+          service_category: Integration
+      messaging:
+        description: Asynchronous communication between distributed applications.
+        annotations:
+          service_category: Integration
+      workflow_orchestration:
+        description: Design, execution, and management of business processes and workflows.
+        annotations:
+          service_category: Integration
+      other_integration:
+        description: Integration services that do not fall into one of the defined subcategories.
+        annotations:
+          service_category: Integration
+      iot_analytics:
+        description: Examination of data collected from IoT devices.
+        annotations:
+          service_category: Internet of Things
+      iot_platforms:
+        description: Unified solution that combines IoT data collection, processing, visualization, and device management.
+        annotations:
+          service_category: Internet of Things
+      other_internet_of_things:
+        description: Internet of Things (IoT) services that do not fall into one of the defined subcategories.
+        annotations:
+          service_category: Internet of Things
+      architecture:
+        description: Planning, design, and construction of software systems.
+        annotations:
+          service_category: Management and Governance
+      compliance:
+        description: Adherance to regulatory standards and industry best practices.
+        annotations:
+          service_category: Management and Governance
+      cost_management:
+        description: Monitoring and controlling expenses of systems and services.
+        annotations:
+          service_category: Management and Governance
+      data_governance:
+        description: Management of the availability, usability, integrity, and security of data.
+        annotations:
+          service_category: Management and Governance
+      disaster_recovery:
+        description: Plans and procedures that ensure systems and services can recover from disruptions.
+        annotations:
+          service_category: Management and Governance
+      endpoint_management:
+        description: Tools that configure and secure access to devices.
+        annotations:
+          service_category: Management and Governance
+      observability:
+        description: Monitoring, logging, and tracing of data to track the performance and health of systems.
+        annotations:
+          service_category: Management and Governance
+      support:
+        description: Assistance and expertise supplied by service providers.
+        annotations:
+          service_category: Management and Governance
+      other_management_and_governance:
+        description: Management and governance services that do not fall into one of the defined subcategories.
+        annotations:
+          service_category: Management and Governance
+      content_creation:
+        description: Production of media content.
+        annotations:
+          service_category: Media
+      gaming:
+        description: Development and delivery of gaming services.
+        annotations:
+          service_category: Media
+      media_streaming:
+        description: Multimedia delivered and rendered in real-time on devices.
+        annotations:
+          service_category: Media
+      mixed_reality:
+        description: Technologies that blend real-world and computer-generated environments.
+        annotations:
+          service_category: Media
+      other_media:
+        description: Media services that do not fall into one of the defined subcategories.
+        annotations:
+          service_category: Media
+      data_migration:
+        description: Movement of stored data from one location to another.
+        annotations:
+          service_category: Migration
+      resource_migration:
+        description: Movement of resources from one location to another.
+        annotations:
+          service_category: Migration
+      other_migration:
+        description: Migration services that do not fall into one of the defined subcategories.
+        annotations:
+          service_category: Migration
+      other_mobile:
+        description: All Mobile services.
+        annotations:
+          service_category: Mobile
+      multicloud_integration:
+        description: Environments that facilitate consumption of services from multiple cloud service providers.
+        annotations:
+          service_category: Multicloud
+      other_multicloud:
+        description: Multicloud services that do not fall into one of the defined subcategories.
+        annotations:
+          service_category: Multicloud
+      application_networking:
+        description: Distribution of incoming network traffic across application-based workloads.
+        annotations:
+          service_category: Networking
+      content_delivery:
+        description: Distribution of digital content using a network of servers (CDNs).
+        annotations:
+          service_category: Networking
+      network_connectivity:
+        description: Facilitates communication between networks or network segments.
+        annotations:
+          service_category: Networking
+      network_infrastructure:
+        description: Configuration, monitoring, and troubleshooting of network devices.
+        annotations:
+          service_category: Networking
+      network_routing:
+        description: Services that select paths for traffic within or across networks.
+        annotations:
+          service_category: Networking
+      network_security:
+        description: Protection from unauthorized network access and cyber threats using firewalls and anti-malware tools.
+        annotations:
+          service_category: Networking
+      other_networking:
+        description: Networking services that do not fall into one of the defined subcategories.
+        annotations:
+          service_category: Networking
+      secret_management:
+        description: Information used to authenticate users and systems, including secrets, certificates, tokens, and other keys.
+        annotations:
+          service_category: Security
+      security_posture_management:
+        description: Tools that help organizations configure, monitor, and improve system security.
+        annotations:
+          service_category: Security
+      threat_detection_and_response:
+        description: Collect and analyze security data to identify and respond to potential security threats and vulnerabilities.
+        annotations:
+          service_category: Security
+      other_security:
+        description: Security services that do not fall into one of the defined subcategories.
+        annotations:
+          service_category: Security
+      backup_storage:
+        description: Secondary storage to protect against data loss.
+        annotations:
+          service_category: Storage
+      block_storage:
+        description: High performance, low latency storage that provides random access.
+        annotations:
+          service_category: Storage
+      file_storage:
+        description: Scalable, sharable storage for file-based data.
+        annotations:
+          service_category: Storage
+      object_storage:
+        description: Highly available, durable storage for unstructured data.
+        annotations:
+          service_category: Storage
+      storage_platforms:
+        description: Unified solution that supports multiple storage types.
+        annotations:
+          service_category: Storage
+      other_storage:
+        description: Storage services that do not fall into one of the defined subcategories.
+        annotations:
+          service_category: Storage
+      application_platforms:
+        description: Integrated environments that run web applications.
+        annotations:
+          service_category: Web
+      other_web:
+        description: Web services that do not fall into one of the defined subcategories.
+        annotations:
+          service_category: Web
+      other_other:
+        description: Services that do not fall into one of the defined categories.
+        annotations:
+          service_category: Other

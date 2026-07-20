@@ -1,0 +1,302 @@
+id: https://example.org/ecofed-billing-schema
+name: federation-billing
+title: Federated Cloud Billing Schema
+
+default_range: string
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+  - focus_line_item
+
+types:
+  ISO8601DateTime:
+    base: datetime
+    uri: xsd:dateTime
+    description: ISO 8601 formatted datetime
+
+
+enums:
+  CurrencyCode:
+    description: ISO 4217 three-letter currency code.
+    permissible_values:
+      EUR: {}
+      USD: {}
+
+  BillingCycle:
+    description: Billing cadence for a credit limit update.
+    permissible_values:
+      Weekly:
+        description: The limit applies on a weekly cadence.
+      Monthly:
+        description: The limit applies on a monthly cadence.
+      Quarterly:
+        description: The limit applies on a quarterly cadence.
+      Yearly:
+        description: The limit applies on a yearly cadence.
+
+  CreditLimitAction:
+    description: Operations that can be applied to a credit limit update.
+    permissible_values:
+      Set:
+        description: Establish or replace the current credit limit.
+      Suspend:
+        description: >-
+          Immediately block all new provisioning for this customer regardless
+          of remaining credit. Used when a customer enters dispute or default.
+      Reinstate:
+        description: Lift a Suspend and restore the credit_limit.
+
+classes:
+  AnyBillingRecord:
+    union_of:
+      - AggregatedChargeRecord
+      - InvoiceRecord
+      - CreditNotification
+      - InvoiceNotification
+      - PaymentNotification
+
+  MessageEnvelope:
+    attributes:
+      message_id:
+        range: string
+        required: true
+        description: UUID v4 uniquely identifying this message instance. Used for idempotent re-delivery handling.
+        identifier: true
+
+      schema_version:
+        range: string
+        required: true
+
+      message_type:
+        range: string
+        required: true
+        description: Name of the class of the payload used for routing to correct component. (eg. "fedbill:AggregatedChargeRecord")
+
+      message_body:
+        required: true
+        inlined: true # Nests the contents
+        range: AnyBillingRecord
+
+      sender_id:
+        range: string
+        required: true
+        description: Identifier for the system in the federation which produced the message. (Eg. CSP ID, BP ID, etc.)
+
+      sent_at:
+        range: ISO8601DateTime
+        required: true
+        description: UTC timestamp at which the message was produced.
+  
+  BillingRecord:
+    description: >-
+      Base class for billing records. Contains common attributes for all billing records sent within the federation. Not intended to be used directly, but rather as a base class for specific record types (eg. AggregatedChargeRecord, InvoiceRecord, etc.)
+    mixin: true
+    attributes:
+      billing_provider_id:
+        range: string
+        required: true
+        description: Identifier for the Billing Provider which produced the record.
+      resource_provider_id:
+        range: string
+        required: true
+        description: Identifier for the Resource Provider which the record is about. (Eg. CSP ID, etc.)
+      billing_account_id:
+        range: string
+        required: true
+        description: Identifier for the billing account which the invoice is for.
+
+  AggregatedChargeRecord:
+    description: >-
+      Sent periodically from the CSP Billing Adapter to the Billing Provider. Contains the aggregated charges for a billing period (eg. 1 hour, 1 day, etc.) for a billing account.
+
+      The batch_id is the Merkle root of the batch of FocusLineItem records which were aggregated to produce the record. Allows the batch to be verified and traced back to the source data in the CSP.
+    is_a: BillingRecord
+    attributes:
+      batch_id: 
+        range: string
+        required: true
+        description: Merkle root of the batch of FocusLineItem records which were aggregated to produce the record.
+      # TODO: These seem unecessary since the BP decides on billing period
+      # billing_period_start:
+      #   range: ISO8601DateTime
+      #   required: true
+      #   description: Start of the billing period which the charges are for.
+      # billing_period_end:
+      #   range: ISO8601DateTime
+      #   required: true
+      #   description: End of the billing period which the charges are for.
+      total_billed_cost:
+        range: decimal
+        required: true
+        description: Total cost billed for the billing period.
+      billing_currency:
+        range: CurrencyCode
+        required: true
+        description: Currency in which the cost is billed.
+      line_item_count:
+        range: integer
+        required: true
+        description: Number of line items which were aggregated to produce the record.
+      batch_hash:
+        range: string
+        required: true
+        description: MerkelRoot of all the batch records.
+      batch_signature:
+        range: string
+        required: true
+        description: Digital signature over canonical form of this AggregatedChargeRecord (which includes the merkle root of the batch). Used for verifying the authenticity and integrity of the record. Serialization excludes this batch_signature field.
+      generated_at: 
+        range: ISO8601DateTime
+        required: true
+        description: UTC timestamp at which the record was generated.
+
+  AggregatedChargeMeteringRecords:
+    description: >-
+      The metering records associated with a specific batch. Sent from the CSP Billing Adapter to the Customer Metrics Service to facilitate correlation between the aggregated charge record and the underlying usage data which produced it.
+
+    is_a: AggregatedChargeRecord
+    attributes:
+      line_items:
+        range: FocusLineItem
+        multivalued: true
+        required: true
+        description: The line items which were aggregated to produce the aggregated charge records. The receiver should be able to verify the merkle root by hashing the line items and comparing to the batch_id in the associated AggregatedChargeRecord.
+
+  InvoiceRecord:
+    is_a: BillingRecord
+    attributes:
+      invoice_id:
+        range: string
+        required: true
+        identifier: true
+        description: BP generated unique identifier for the invoice.
+      invoice_period_start:
+        range: ISO8601DateTime
+        required: true
+        description: Start of the invoice period which the invoice is for.
+      invoice_period_end:
+        range: ISO8601DateTime
+        required: true
+        description: End of the invoice period which the invoice is for.
+      total_billed_cost:
+        range: decimal
+        required: true
+        description: Total cost billed for the invoice period.
+      billing_currency:
+        range: CurrencyCode
+        required: true
+        description: Currency in which the cost is billed.
+      generated_at:
+        range: ISO8601DateTime
+        required: true
+        description: UTC timestamp at which the record was generated.
+  
+
+  
+  InvoiceCoverage:
+    description: >-
+      Mixin capturing which invoice, billing period, and CSP batches a notification relates to. Shared by InvoiceNotification and PaymentNotification so a CSP can trace either message back to the batches it originally sent to the BP for that billing period.
+    mixin: true
+    attributes:
+      invoice_id:
+        range: string
+        required: true
+        description: Identifier (InvoiceRecord.invoice_id) of the invoice this notification relates to.
+      invoice_period_start:
+        range: ISO8601DateTime
+        required: true
+        description: Start of the invoice period which the invoice covers.
+      invoice_period_end:
+        range: ISO8601DateTime
+        required: true
+        description: End of the invoice period which the invoice covers.
+      batch_ids:
+        range: string
+        multivalued: true
+        required: true
+        description: Identifiers (AggregatedChargeRecord.batch_id) of this CSP's batches which are covered by the invoice. Lets the CSP reconcile the notification against the batches it originally sent to the BP for the billing period.
+
+  InvoiceNotification:
+    description: >-
+      Sent from the Billing Provider to each CSP once an invoice has been issued to the customer. Communicates the portion of the invoice's billed cost attributable to this CSP, and which of the CSP's batches the invoice covers.
+    mixins:
+      - BillingRecord
+      - InvoiceCoverage
+    attributes:
+      notification_id:
+        range: string
+        required: true
+        identifier: true
+        description: Unique identifier for this invoice notification. Used for idempotent handling of the notification.
+      billed_amount:
+        range: decimal
+        required: true
+        description: Portion of the invoice's total_billed_cost attributable to this CSP.
+      billing_currency:
+        range: CurrencyCode
+        required: true
+        description: Currency in which billed_amount is denominated.
+      generated_at:
+        range: ISO8601DateTime
+        required: true
+        description: UTC timestamp at which the notification was generated.
+
+  PaymentNotification:
+    description: >-
+      Sent from the Billing Provider to each CSP once payment for an invoice has been received from the customer. Communicates the amount that will be paid to the CSP as its share of that payment, so the CSP can reconcile it against the batches it sent to the BP for the covered billing period.
+    mixins:
+      - BillingRecord
+      - InvoiceCoverage
+    attributes:
+      notification_id:
+        range: string
+        required: true
+        identifier: true
+        description: Unique identifier for this payment notification. Used for idempotent handling of the notification.
+      amount_paid:
+        range: decimal
+        required: true
+        description: Amount that will be distributed to this CSP as its share of the payment received from the customer. The CSP should reconcile this against the total_billed_cost of the batches identified in batch_ids.
+      payment_currency:
+        range: CurrencyCode
+        required: true
+        description: Currency in which amount_paid is denominated.
+      payment_received_at:
+        range: ISO8601DateTime
+        required: true
+        description: UTC timestamp at which the BP received payment from the customer.
+      generated_at:
+        range: ISO8601DateTime
+        required: true
+        description: UTC timestamp at which the notification was generated.
+
+  CreditNotification:
+    description: >-
+      Sent from the Billing Provider to the CSP Billing Adapter to update the credit limit for a billing account. Used to ensure that the customer doesnt' overspend their credit limit, or use more than their account balance.
+    mixins:
+      - BillingRecord
+    attributes:
+      notification_id:
+        range: string
+        required: true
+        identifier: true
+        description: Unique identifier for the credit limit update. Used for idempotent handling of updates.
+      billed_currency:
+        range: CurrencyCode
+        required: true
+        description: Currency in which the credit limit is set.
+      new_credit_limit:
+        range: decimal
+        required: true
+        description: New credit limit for the billing account. CSP Billing Adapter should enforce that the total billed cost for the billing account does not exceed this limit. If the credit limit is set to 0 it means that no more charges should be incurred until another limit update is received with a higher limit.
+      valid_from:
+        range: ISO8601DateTime
+        required: true
+        description: UTC timestamp from which the new credit limit is valid. Should be in the future to allow for propagation time of the update through the system. If there are multiple valid credit limits, the one with the most recent valid_from timestamp should be used.
+      action:
+        range: CreditLimitAction
+        required: true
+        description: The operation to apply to this credit limit update.

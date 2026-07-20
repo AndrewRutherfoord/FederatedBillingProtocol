@@ -1,0 +1,10 @@
+{
+    "batch_id": "751b0b9c-0200-45fa-b412-51658b833abb",
+    "cost": "10.42",
+    "billed_period_start": "2026-06-02T00:00:00Z",
+    "billed_period_end": "2026-06-02T01:00:00Z",
+    "currency": "EUR",
+    "billing_account_id": "eb97e4c6-5e57-11f1-bcdf-00155ded7e78",
+    "merkel_root": "DBuVEXcMLCMgoDOeVXWrxinbq9Wi3exIenpcexa4sCA=",
+    "signature": "MEUCIQDI1G77CWHRM5dZCIx9UZNXhZT8CqCc+BzCeWA3fWo2H72G7DM="
+}
