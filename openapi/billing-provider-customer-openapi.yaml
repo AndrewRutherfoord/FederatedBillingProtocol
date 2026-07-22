@@ -161,6 +161,23 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Invoice"
+  /billing/invoices/{invoice_id}:
+    get:
+      description: Endpoint for customer to retrieve a specific invoice by its hash.
+      parameters:
+        - in: path
+          name: invoice_hash
+          required: true
+          schema:
+            type: string
+          description: Hash of the invoice to retrieve.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invoice"
 
 components:
   securitySchemes:
@@ -267,13 +284,13 @@ components:
           description: Total cost for the charge batch.
         billed_currency:
           type: string
-          description: Currency in which the cost is billed, in ISO 4217 format (e.g. USD, EUR).
+          description: Currency in which the cost is billed, in ISO 4217 format (e.g. EUR).
         line_item_count:
           type: integer
           description: Number of line items which were aggregated to produce this charge batch.
-        merkle_root:
+        batch_hash:
           type: string
-          description: MerkelRoot of all the line items in the batch.
+          description: The hash over all records contained in this batch. See hash_calculation.md
         created_at:
           type: string
           format: date-time
@@ -319,7 +336,7 @@ components:
           description: Total credit used for the billing account at the time of request for the current billing period. Should be less than or equal to credit_available.
         credit_currency:
           type: string
-          description: Currency in which the credit is denominated, in ISO 4217 format (e.g. USD, EUR).
+          description: Currency in which the credit is denominated, in ISO 4217 format (e.g. EUR).
         payment_model:
           type: string
           description: Payment model for the billing account, either "prepaid" or "postpaid". If prepaid, credit_available indicates the remaining balance for the billing account. If postpaid, credit_available indicates the credit limit for the billing account.
@@ -335,13 +352,73 @@ components:
     Invoice:
       type: object
       properties:
+        invoice_id:
+          type: string
+          description: UUID4 identifier for the invoice.
         billing_provider_id:
           type: string
           description: Identifier for the billing provider which produced this invoice.
         billing_account_id:
           type: string
           description: UUID4 identifier for the billing account which this invoice is associated with.
-        # TODO: Add actual invoice data....
+        billing_period_start:
+          type: string
+          format: date-time
+          description: Start time (inclusive) for the billing period covered by this invoice.
+        billing_period_end:
+          type: string
+          format: date-time
+          description: End time (exclusive) for the billing period covered by this invoice.
+        total_billed_cost:
+          type: number
+          format: float
+          description: Total cost for the invoice.
+        billed_currency:
+          type: string
+          description: Currency in which the cost is billed, in ISO 4217 format (e.g. EUR).
+        line_items:
+          type: array
+          items:
+            $ref: "#/components/schemas/InvoiceLineItem"
+        invoice_hash:
+          type: string
+          description: Hash over all line items that make up this invoice. See hash_calculation.md
+        signature:
+          type: string
+          description: >-
+            Signature of the invoice, signed by the billing provider. The signature is over the invoice_hash and can be verified using the billing provider's JWKS
+        file:
+          type: string
+          format: uri
+          description: >-
+            Optional URL where the invoice can be downloaded as a PDF. The PDF is signed by the billing provider and includes the invoice_hash and signature in the PDF metadata.
+
+    InvoiceLineItem:
+      type: object
+      properties:
+        cloud_provider_id:
+          type: string
+          description: ID of the CSP which this line item is an aggregation of batches for. Leave empty if the line item is associated with the billing provider directly (e.g. for a billing provider service fee).
+        total_billed_cost:
+          type: number
+          format: float
+          description: Total cost for the line item.
+        billed_currency:
+          type: string
+          description: Currency in which the cost is billed, in ISO 4217 format (e.g. EUR).
+        description:
+          type: string
+          description: Description of the line item, including what it is for and any other relevant information
+        batch_ids:
+          type: array
+          items:
+            type: string
+          description: List of charge batch IDs which were aggregated to produce this line item.
+        line_item_hash:
+          type: string
+          description: Hash over all charge batches that make up this line item. See hash_calculation.md
+        
+
 
     TokenRequest:
       type: object

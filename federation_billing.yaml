@@ -59,6 +59,7 @@ classes:
       - PaymentNotification
 
   MessageEnvelope:
+    description: This is class wraps a given message to add metadata for tracing and routing. In some transport protocols explicitly including this in the message can be foregone by using the transport protocols metadata to carry this information.
     attributes:
       message_id:
         range: string
@@ -119,15 +120,6 @@ classes:
         range: string
         required: true
         description: Merkle root of the batch of FocusLineItem records which were aggregated to produce the record.
-      # TODO: These seem unecessary since the BP decides on billing period
-      # billing_period_start:
-      #   range: ISO8601DateTime
-      #   required: true
-      #   description: Start of the billing period which the charges are for.
-      # billing_period_end:
-      #   range: ISO8601DateTime
-      #   required: true
-      #   description: End of the billing period which the charges are for.
       total_billed_cost:
         range: decimal
         required: true
@@ -194,9 +186,7 @@ classes:
         required: true
         description: UTC timestamp at which the record was generated.
   
-
-  
-  InvoiceCoverage:
+  InvoiceMixin:
     description: >-
       Mixin capturing which invoice, billing period, and CSP batches a notification relates to. Shared by InvoiceNotification and PaymentNotification so a CSP can trace either message back to the batches it originally sent to the BP for that billing period.
     mixin: true
@@ -224,7 +214,7 @@ classes:
       Sent from the Billing Provider to each CSP once an invoice has been issued to the customer. Communicates the portion of the invoice's billed cost attributable to this CSP, and which of the CSP's batches the invoice covers.
     mixins:
       - BillingRecord
-      - InvoiceCoverage
+      - InvoiceMixin
     attributes:
       notification_id:
         range: string
@@ -249,7 +239,7 @@ classes:
       Sent from the Billing Provider to each CSP once payment for an invoice has been received from the customer. Communicates the amount that will be paid to the CSP as its share of that payment, so the CSP can reconcile it against the batches it sent to the BP for the covered billing period.
     mixins:
       - BillingRecord
-      - InvoiceCoverage
+      - InvoiceMixin
     attributes:
       notification_id:
         range: string
@@ -275,7 +265,7 @@ classes:
 
   CreditNotification:
     description: >-
-      Sent from the Billing Provider to the CSP Billing Adapter to update the credit limit for a billing account. Used to ensure that the customer doesnt' overspend their credit limit, or use more than their account balance.
+      Sent from the Billing Provider to the CSP Billing Adapter to update the credit limit for a billing account. Used to ensure that the customer doesn't' overspend their credit limit, or use more than their account balance.
     mixins:
       - BillingRecord
     attributes:
