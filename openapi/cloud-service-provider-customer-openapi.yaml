@@ -28,7 +28,7 @@ paths:
                     type: string
                     example: "csp-provider-123"
 
-  /.well-known/csp-provider:
+  /.well-known/cloud-service-provider:
     get:
       description: Returns metadata about the CSP, including its API endpoints and signing keys.
       security: []

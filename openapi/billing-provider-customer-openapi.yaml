@@ -290,7 +290,7 @@ components:
           description: Number of line items which were aggregated to produce this charge batch.
         batch_hash:
           type: string
-          description: The hash over all records contained in this batch. See hash_calculation.md
+          description: The hash over all records contained in this batch. See ../docs/hash_calculation.md
         created_at:
           type: string
           format: date-time
@@ -382,7 +382,7 @@ components:
             $ref: "#/components/schemas/InvoiceLineItem"
         invoice_hash:
           type: string
-          description: Hash over all line items that make up this invoice. See hash_calculation.md
+          description: Hash over all line items that make up this invoice. See ../docs/hash_calculation.md
         signature:
           type: string
           description: >-
@@ -416,7 +416,7 @@ components:
           description: List of charge batch IDs which were aggregated to produce this line item.
         line_item_hash:
           type: string
-          description: Hash over all charge batches that make up this line item. See hash_calculation.md
+          description: Hash over all charge batches that make up this line item. See ../docs/hash_calculation.md
         
 
 
